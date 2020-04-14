@@ -3,9 +3,12 @@
 import os
 
 if os.name == "posix":
+    mdpath = "MKDEPPATH=" + os.getcwd() 
+    print(mdpath)
 
     f=open('rules','w')
     f.write((\
+    mdpath + "\n" +\
     """
 # These predefined variables may be set in the Makefile
 #
@@ -50,8 +53,8 @@ include .mkdep_dependencies
 ## delete object files (keep mkdep stuff)
 clean:
 \trm -f build/*.mod *.mod *~ $(EXECUTABLE) $(MAINLIB)
-\trmobjs .mkdep_objects
-\tmkdep reset
+\t$(MKDEPPATH)/rmobjs .mkdep_objects
+\t$(MKDEPPATH)/mkdep reset
 \tmake dep
 
 ## (re)generate dependencies
@@ -66,15 +69,15 @@ dep:
 \tif [ "$(strip $(ORGSRCDIR))" != "" ] ; then \\
 \t   echo $(ORGSRCDIR) > .incdirs ;\\
 \t   echo "." >> .incdirs ;\\
-\t   mergedotfiles $(ORGSRCDIR) ;\\
+\t   $(MKDEPPATH)/mergedotfiles $(ORGSRCDIR) ;\\
 \telse \\
 \t   echo "." > .incdirs ;\\
-\t   mergedotfiles NOORGSRCDIR ;\\
+\t   $(MKDEPPATH)/mergedotfiles NOORGSRCDIR ;\\
 \tfi
 \tif [ $(strip $(CPP_FLAGS)) != "" ] ; then \\
-\t   mkdep -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
+\t   $(MKDEPPATH)/mkdep -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
 \telse \\
-\t   mkdep -e $(ENCODING) -i .incdirs .files ;\\
+\t   $(MKDEPPATH)/mkdep -e $(ENCODING) -i .incdirs .files ;\\
 \tfi
 
 ## explicit rules for each and every file
