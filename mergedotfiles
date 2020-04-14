@@ -56,7 +56,7 @@ orgfilelist = list(orgfiles.keys())
 #print "orgfiles=", orgfiles
 #print "modfiles=", modfiles
 
-def writerule(srcfilename, sourcedir, group, file):
+def writerule(fullsrcfilename, sourcedir, group, file):
     flag="$(FLAGS)"
     if group == "OPT2":
         flag="$(FLAGS2)"
