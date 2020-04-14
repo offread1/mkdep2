@@ -1290,8 +1290,9 @@ def write_dependencies():
         src += globals.object_files[key]
     for i in range(len(src)):
         #objs.append(string.replace(src[i],".f90",".o"))
-        objs.append(src[i].replace(".f90",".o"))
-
+        #objs.append(src[i].replace(".f90",".o"))
+        dotpos = src[i].rfind(".")
+        objs.append(src[i][:dotpos]+".o")
     for item in list(globals.clean_source_files2.items()):
         (filename, tuple) = item
         deps = tuple[4]
@@ -1314,6 +1315,9 @@ def write_dependencies():
             for ind in range(len(deps)):
                 ## if we use a build dir, all .o files are there.
                 if globals.use_build_dir:
+                    # objs is the list of object files from source
+                    # files we provide, other object files will not be
+                    # in build. maybe we should not even list them. header files are of course special.
                     if deps[ind] in objs:
                         seppos = deps[ind].rfind("/")
                         str += " " + "build/" + deps[ind][seppos+1:]

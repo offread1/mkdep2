@@ -121,7 +121,11 @@ if len(sys.argv)>1:
 
 force_reparse=0
 
+## this is a good place to 
+## override default values with environment variables. PS Makefile variables does not count.
+# tmpstring = os.environ.get('CPP_FLAGS')
 
+    
 ## override the defaults with command line arguments
 
 try:
@@ -172,7 +176,7 @@ try:
             if opt == "--cc":
                 cc=value
             if opt == "--cppflags":
-                cppflags = value
+                cppflags += " " + value
             if opt == "--cpp":
                 cppcommand = value
             if opt == "--treetop":

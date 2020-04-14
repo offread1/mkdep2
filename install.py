@@ -18,6 +18,7 @@ if os.name == "posix":
 # PREFREEFLAGS      extra flags for compiling free form files with preprocessing directives
 # ORGSRCDIR         build project from all files in $(ORGSRCDIR)/.files and SOURCEFILES, where files
 #                   in the latter override files in the former
+# CPP_FLAGS         if not "", pass flags such as -I... -D... etc and invoke cpp from mkdep before parsing the fortran. a fair bit slower.
 
 ## get the list of object files
 
@@ -70,7 +71,11 @@ dep:
 \t   echo "." > .incdirs ;\\
 \t   mergedotfiles NOORGSRCDIR ;\\
 \tfi
-\tmkdep -e $(ENCODING) -i .incdirs .files
+\tif [ $(strip $(CPP_FLAGS)) != "" ] ; then \\
+\t   mkdep -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
+\telse \\
+\t   mkdep -e $(ENCODING) -i .incdirs .files ;\\
+\tfi
 
 ## explicit rules for each and every file
 include .mkdep_rules
@@ -125,6 +130,7 @@ if os.name == "nt":
 # PREFREEFLAGS      extra flags for compiling free form files with preprocessing directives
 # ORGSRCDIR         build project from all files in $(ORGSRCDIR)/.files and SOURCEFILES, where files
 #                   in the latter override files in the former
+# CPP_FLAGS         if not "", pass flags such as -I... -D... etc and invoke cpp from mkdep before parsing the fortran. a fair bit slower.
 #
 # For the script to work properly, make sure the mkdep directory is
 # early in the path, e.g. if mkdep is in D:\ execute
@@ -180,7 +186,11 @@ dep:
 \t   echo "." > .incdirs ;\\
 \t   mergedotfiles.bat NOORGSRCDIR ;\\
 \tfi
-\tmkdep.bat -e $(ENCODING) -i .incdirs .files
+\tif [ $(strip $(CPP_FLAGS)) != "" ] ; then \\
+\t   mkdep.bat -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
+\telse \\
+\t   mkdep.bat -e $(ENCODING) -i .incdirs .files ;\\
+\tfi
 
 ## explicit rules for each and every file
 include .mkdep_rules

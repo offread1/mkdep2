@@ -63,18 +63,26 @@ def writerule(srcfilename, sourcedir, group, file):
     if sourcedir!="":
         if sourcedir[-1]!="/":
             sourcedir += "/"
+
+    slashpos = fullsrcfilename.rfind("/")
+    srcfilename = fullsrcfilename[slashpos+1:]
+
+# write rules that look like this
+#   build/mod_bound.o : src/mod_bound.f90 ; $(FORTRANCOMPILER) -c "+flag+" $(FREEFLAGS) -o $@ $<
+# we assume all .o files to be in "build" with a uniqe name. if that fails add hash to names in build later.
+    
     if srcfilename.find(".f90") > 0:
-        file.write(("build/"+srcfilename.replace(".f90",".o")+" : "+sourcedir+srcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(FREEFLAGS) -o $@ $<\n"))
+        file.write(("build/"+srcfilename.replace(".f90",".o")+" : "+sourcedir+fullsrcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(FREEFLAGS) -o $@ $<\n"))
     elif srcfilename.find(".f") > 0:
-        file.write(("build/"+srcfilename.replace(".f",".o")+" : "+sourcedir+srcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(FIXEDFLAGS) -o $@ $<\n"))
+        file.write(("build/"+srcfilename.replace(".f",".o")+" : "+sourcedir+fullsrcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(FIXEDFLAGS) -o $@ $<\n"))
     elif srcfilename.find(".F90") > 0:
-        file.write(("build/"+srcfilename.replace(".F90",".o")+" : "+sourcedir+srcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(PFREEFLAGS) -o $@ $<\n"))
+        file.write(("build/"+srcfilename.replace(".F90",".o")+" : "+sourcedir+fullsrcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(PFREEFLAGS) -o $@ $<\n"))
     elif srcfilename.find(".F") > 0:
-        file.write(("build/"+srcfilename.replace(".F",".o")+" : "+sourcedir+srcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(PFIXEDFLAGS) -o $@ $<\n"))
+        file.write(("build/"+srcfilename.replace(".F",".o")+" : "+sourcedir+fullsrcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" $(PFIXEDFLAGS) -o $@ $<\n"))
     elif srcfilename.find(".c") > 0:
-        file.write(("build/"+srcfilename.replace(".c",".o")+" : "+sourcedir+srcfilename+" ; $(CC) -c $(CFLAGS) -o $@ $<\n"))
+        file.write(("build/"+srcfilename.replace(".c",".o")+" : "+sourcedir+fullsrcfilename+" ; $(CC) -c $(CFLAGS) -o $@ $<\n"))
     elif srcfilename.find(".s") > 0:
-        file.write(("build/"+srcfilename.replace(".s",".o")+" : "+sourcedir+srcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" -o $@ $<\n"))
+        file.write(("build/"+srcfilename.replace(".s",".o")+" : "+sourcedir+fullsrcfilename+" ; $(FORTRANCOMPILER) -c "+flag+" -o $@ $<\n"))
 
 
 f=open(".files", "w")
