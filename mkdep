@@ -1,7 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, sys, getopt
 import libmkdep, globals
+
+#sys.exit()
+
 
 def usage():
     print("""
@@ -92,6 +95,10 @@ cppflags="-P -traditional"   # the default flags to use for cpp (assume GNU cpp)
 erase_50 = "\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\
 \x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\
 \x08\x08\x08\x08\x08\x08\x08\x08\x08"
+
+# path to mkdep (including separator - implement for windows later)
+i_separator = sys.argv[0].rfind("/")
+MKDEPPATH = sys.argv[0][:i_separator+1]
 
 ## cleanup
 
