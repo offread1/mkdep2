@@ -289,7 +289,8 @@ def classify_files(projfile='', incfile='', rootdir=''):
         ifile = open(".mkdep_suggested_incdirs","w")
         ifile.write("# This is a list over directories where '"+projfile+"'\n")
         ifile.write("# suggest we have an include file:\n\n")
-        ifile.write(globals.incdirs+"\n")
+        for line in globals.incdirs:
+            ifile.write(line+"\n")
         ifile.close()
 
 
