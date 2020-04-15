@@ -1362,7 +1362,7 @@ def save_maps():
 def load_maps():
     import pickle
     if os.access('.mkdep_restart_file', os.F_OK):
-        mapfile=open('.mkdep_restart_file','r')
+        mapfile=open('.mkdep_restart_file','rb')
         try:
             globals.clean_source_files2 = pickle.load(mapfile)
             globals.object_files= pickle.load(mapfile)
