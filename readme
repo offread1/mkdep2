@@ -131,7 +131,7 @@ project. the format of this file is simple:
    into Makefile variables that can be used later to compile object files with 
    different flags. if none of the files listed has the MAIN group, it
    is assumed that the main program is in the first file listed.
-  -column three is a string (free=free format fortran,fixed= fixed format or "C") to hint about 
+  -column three is a string ("free" for free format fortran, "fixed" for fixed format or "C" for C) to hint about 
    the language form. if this one is wrong, mkdep may fail to produce the correct 
    dependencies.
   -column four is a string with value "source" or "include" to hint if the file is

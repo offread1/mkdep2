@@ -1206,7 +1206,7 @@ MAINLIB = lib$(PROJECT).a\n'
     if 'c'   in suffixes: makefile += '%.o : %.c   ; $(CC)  -c $(CFLAGS)      -o $@ $<\n'
 
     makefile += '\ndep:\n\
-\t' + "".join(sys.argv) + '\n\
+\t' + " ".join(sys.argv) + '\n\
 clean:\n\
 \trm -f *.mod *~ $(PROJECT) $(MAINLIB)\n\
 \trmobjs .mkdep_objects\n'
