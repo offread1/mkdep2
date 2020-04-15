@@ -1,29 +1,31 @@
-The Fortran dependency, call tree .and./.or. Makefile generator mkdep
 
-Helge Avlesen <avle@bccs.uib.no>
+THE FORTRAN DEPENDENCY, CALL TREE .AND./.OR. MAKEFILE GENERATOR MKDEP
 
-This tool has two modes of usage: the simplified makefile approach,
-and the project file approach.  The goal is to make it quick to set up
-makefiles that handle complicated dependencies automatically, which
-makes the use of modules much more convenient.
+by Helge Avlesen
+
+
+The goal of the mkdep tool is to provide an easy way to set up Fortran
+makefiles that handle complicated dependencies automatically. This
+makes the use of modules, which is highly recommended, more
+convenient. The tool is written in Python, for GNU Make, and will
+probably not work with other makes without tweaks.
+
+The tool has two modes of usage: the simplified makefile approach,
+and the project file approach.  
 
 
 *The simplified Makefile approach
 
 **Install:
 
-First install mkdep in a convenient location. since you are now
+First unpack mkdep in a convenient location. since you are now
 already reading a readme file in this directory, do a
 
   python install.py
 
-this will create a file called "rules" that we must include in all
-Makefiles that want to use this system.
+this will create a file called "rules" that must be included in all
+Makefiles that we want to use this approach.
 
-it is a good idea to have the mkdep directory first in your PATH,
-e.g. with mkdep in your $HOME
-
-  export PATH=~/mkdep:$PATH
 
 **The makefile:
 
@@ -37,33 +39,39 @@ lines
 make sure the last line really points to the "rules" file, otherwise
 things will not work! Now execute
 
-    mkdep reset
+  .../mkdep reset
 
-To initialize the mkdep data files included from the makefile. This only has to be done once.
-
+To initialize the mkdep data files included from the makefile. In
+principle, this only has to be done once.
 
 (Note: if you omit e.g. FORTRANCOMPILER the tool will assume
-FORTRANCOMPILER to be gfortran by default.  it is also possible to specify
-the name of the resulting executable in the EXECUTABLE variable.
-these special variables has to be defined before the include
-statement.)
+FORTRANCOMPILER to be gfortran by default.  it is also possible to
+specify the name of the resulting executable in the EXECUTABLE
+variable.  these special variables has to be defined before the
+"include .../rules" statement.)
 
 
-Now, compiling the first time:
+Now, compiling the first time: first build dependency lists. (these
+lists will be in the files .mkdep_xxxx)
+
     make dep
+
+Build the program
+
     make
 
-From then on, you can use a single "make" to rebuild, with two exceptions:
-1) you modify SOURCEFILES or compiler flags
-2) you modify the code so that dependencies due to modules change.
+From then on, use a single "make" to rebuild, with two exceptions:
+1) SOURCEFILES or compiler flags are modified
+2) code is modified, so that dependencies due to e.g. modules change.
 in any of those cases, rebuild code with
+
     make dep
     make
 
 
 *The project file approach
 
-The user provides a "project file" that contains a list of all source
+The user provides a "project file", which is a list of all source
 files that his program is made from. mkdep uses the project file to
 create a list of object files and their dependencies in a form
 suitable for inclusion in a Makefile. a simple template Makefile is
@@ -85,9 +93,7 @@ compiler:
 
 * Installation and requirements
 
-To make it work;
-1) you need Python and GNU Make. (and of course a Fortran compiler to build)
-2) ensure the mkdep files are in the $PATH.
+For this package to work, you need Python3 and GNU Make.
 
 For Windows users, go to the directory containing the mkdep scripts,
 execute "install.py" and a set of .bat files should be produced.
@@ -125,14 +131,13 @@ project. the format of this file is simple:
    into Makefile variables that can be used later to compile object files with 
    different flags. if none of the files listed has the MAIN group, it
    is assumed that the main program is in the first file listed.
-  -column three is a string (free format fortran, fixed format or C) to hint about 
+  -column three is a string (free=free format fortran,fixed= fixed format or "C") to hint about 
    the language form. if this one is wrong, mkdep may fail to produce the correct 
    dependencies.
-  -column four a string (source or include) to hint if the file is
-   to be compiled or just "included". mkdep will not use include files in the list of
-   object files.
+  -column four is a string with value "source" or "include" to hint if the file is
+   to be compiled or just "included". 
 
-To generate a list of source files, you can do something like
+To generate a list of source files, you can e.g. in linux do something like
 
   ls -1 *.f90 > all.files
 
