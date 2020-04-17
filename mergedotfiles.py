@@ -3,7 +3,7 @@
 import sys
 
 def usage():
-    print("""\
+    print("""
 usage:
    mergedotfiles <sourcedir>
 

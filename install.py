@@ -7,9 +7,7 @@ if os.name == "posix":
     print(mdpath)
 
     f=open('rules','w')
-    f.write((\
-    mdpath + "\n" +\
-    """
+    f.write((mdpath + "\n" + """
 # These predefined variables may be set in the Makefile
 #
 # EXECUTABLE        name of final program
@@ -91,37 +89,8 @@ include .mkdep_rules
 if os.name == "nt":
     pwd = os.getcwd()
 
-    f=open('mkdep.bat','w')
-    f.write(("@python "+pwd+"\\mkdep %1 %2 %3 %4 %5 %6 %7 %8 %9\n"))
-    f.close()
-
-    f=open('mklib.bat','w')
-    f.write(("@python "+pwd+"\\mklib %1 %2 %3 %4 %5 %6\n"))
-    f.close()
-
-    f=open('rmobjs.bat','w')
-    f.write(("@python "+pwd+"\\rmobjs %1\n"))
-    f.close()
-
-    f=open('pgrep.bat','w')
-    f.write(("@python "+pwd+"\\pgrep.py %1 %2\n"))
-    f.close()
-
-    f=open('callstack.bat','w')
-    f.write(("@python "+pwd+"\\callstack.py %1\n"))
-    f.close()
-
-    f=open('calltree.bat','w')
-    f.write(("@python "+pwd+"\\calltree.py %1\n"))
-    f.close()
-
-    f=open('mergedotfiles.bat','w')
-    f.write(("@python "+pwd+"\\mergedotfiles %1\n"))
-    f.close()
-    
     f=open('rules','w')
-    f.write((\
-    """
+    f.write(("""
 # These predefined variables may be set in the Makefile
 #
 # EXECUTABLE        name of final program
@@ -135,9 +104,6 @@ if os.name == "nt":
 #                   in the latter override files in the former
 # CPP_FLAGS         if not "", pass flags such as -I... -D... etc and invoke cpp from mkdep before parsing the fortran. a fair bit slower.
 #
-# For the script to work properly, make sure the mkdep directory is
-# early in the path, e.g. if mkdep is in D:\ execute
-#   set path=d:/mkdep;%path%
 
 ## get the list of object files
 include .mkdep_objects
@@ -168,8 +134,7 @@ include .mkdep_dependencies
 
 clean:
 \trm -f build/*.mod *.mod *~ $(EXECUTABLE) $(MAINLIB)
-\trmobjs.bat .mkdep_objects
-\tmkdep.bat reset
+\t""" + repr(pwd)[1:-1] + r"\\rmobjs.py .mkdep_objects" + "\n\t" + repr(pwd)[1:-1] + r"\\mkdep.py reset" + """
 \tmake dep
 
 ## (re)generate dependencies
@@ -184,15 +149,19 @@ dep:
 \tif [ "$(strip $(ORGSRCDIR))" != "" ] ; then \\
 \t   echo $(ORGSRCDIR) > .incdirs ;\\
 \t   echo "." >> .incdirs ;\\
-\t   mergedotfiles.bat $(ORGSRCDIR) ;\\
+"""
+"\t   " + repr(pwd)[1:-1] + r"\\mergedotfiles.py $(ORGSRCDIR) ;" + "\\" + """
 \telse \\
 \t   echo "." > .incdirs ;\\
-\t   mergedotfiles.bat NOORGSRCDIR ;\\
+"""
+"\t   " + repr(pwd)[1:-1] + r"\\mergedotfiles.py NOORGSRCDIR ;" + "\\" + """
 \tfi
 \tif [ $(strip $(CPP_FLAGS)) != "" ] ; then \\
-\t   mkdep.bat -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
+"""
+"\t   " + repr(pwd)[1:-1] + r"\\mkdep.py -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;" + "\\" + """
 \telse \\
-\t   mkdep.bat -e $(ENCODING) -i .incdirs .files ;\\
+"""
+"\t   " + repr(pwd)[1:-1] + r"\\mkdep.py -e $(ENCODING) -i .incdirs .files ;" + "\\" + """
 \tfi
 
 ## explicit rules for each and every file

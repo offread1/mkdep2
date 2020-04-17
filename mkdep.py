@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os, sys, getopt
 import libmkdep, globals
 
-#sys.exit()
 
 
 def usage():
