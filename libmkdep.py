@@ -643,18 +643,18 @@ def match_use(line, map, filename):
 def match_include(line, include_path=["."]):
     """
     match fortran and c include statements on a stripped line,
-    return 1,filename for a match, 0,"" otherwise.
+    return filename for a match, "" otherwise.
+    
+    todo: (exotic)
+        ...some statement... ; # include "somefile"   
+    so. let cpp handle preprocessing. 
     """
     tmp=line
     icol = tmp.upper().find("INCLUDE ")
     if icol<0:
-        return ""
-    if icol>1 and line[0]=="#":   ## if col 0 not a #, no real include
-        return ""
-
-    ## BUG! we strip strings before we parse for include
-    ## statements... this increadibly clever trick makes it impossible
-    ## to get dependencies for include files right...
+        return ""    
+    if icol>1 and line[0]=="#":   # if col 0 not a #, no real include        
+        return ""                 # actually not true.  >  #  include "jfdkjf"< is allowed in newer C.
 
     ## locate the quotes, that can be ' or ". filename inbetween.
     firstquote = line[icol+8:].find('"')

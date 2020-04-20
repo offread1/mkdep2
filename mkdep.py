@@ -213,7 +213,20 @@ project_file=args[0]
 
 ### Parse the project file and reload the current dependency map from .mkdep_restart_file
 
+
+# should "." be a default search dir for include files? some may not always want that?
+# should all directories found in the project file be used as search path for includes?
+
+# we will not auto classify files as source/include because the
+# parsing depends on the classification. files should have a good
+# suffix, or given class in the project file.
+
+# includepath is initialized to [] in classify_files, add . as default
+
 includepath = libmkdep.classify_files(project_file, incfile, rootdir)
+includepath.append(".")
+
+
 
 if cppcommand.strip() != "type":
     cppflags += " " + globals.incpathstring
