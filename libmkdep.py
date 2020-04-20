@@ -28,7 +28,10 @@ match_single_quote = re.compile("'")
 match_double_quote = re.compile('"')
 match_exclam       = re.compile("!")
 
+
 dotcolors=['gold', 'salmon', 'steelblue', 'firebrick', 'orchid', 'sienna', 'brown', 'blueviolet', 'blue', 'indigo', 'yellow', 'pink', 'beige', 'violet', 'green', 'darkgreen', 'greenyellow', 'palegreen', 'magenta', 'orange', 'cyan', 'seagreen', 'gray', 'mediumturquoise', 'red']
+
+
 
 def classify_files(projfile='', incfile='', rootdir=''):
     """
@@ -38,7 +41,7 @@ def classify_files(projfile='', incfile='', rootdir=''):
 
     ## the default guesses for file types
 
-    filetype = { ".F":"fixed", ".F90":"free", ".f":"fixed", ".for":"fixed",\
+    filetype = { ".F":"fixed", ".F90":"free", ".fi":"free", ".f":"fixed", ".for":"fixed",\
                  ".f90":"free", ".c":"C", ".h":"C", ".H":"C",\
                  ".inc":"fixed", ".INC":"fixed", ".SYM":"fixed"}
 
@@ -300,7 +303,7 @@ def classify_files(projfile='', incfile='', rootdir=''):
     ## if argument 2 is present, it is a file with a list of include directories
     ## we also write a suggestion for this list, based on the info from sys.argv[1]
 
-    if len(globals.incdirs)>0:
+    if len(globals.incdirs)>1:
         ifile = open(".mkdep_suggested_incdirs","w")
         ifile.write("# This is a list over directories where '"+projfile+"'\n")
         ifile.write("# suggest we have an include file:\n\n")
@@ -337,7 +340,7 @@ def classify_files(projfile='', incfile='', rootdir=''):
         print("Include files will be picked up in this order:")
         print(globals.incpathstring + "\n")
 
-    elif len(globals.incdirs)>0:
+    elif len(globals.incdirs)>1:
         print("""
 Info: you did not supply a file with a list of include directories to
 search. It may be necessary to provide include paths (-Idir1 -Idir2 -I...)
@@ -1391,7 +1394,7 @@ def load_maps():
             globals.routines={}
             globals.functions={}
             globals.programs={}
-            globals.incdirs = []
+            globals.incdirs = ["."]
             globals.suffixes = []
         mapfile.close()
 

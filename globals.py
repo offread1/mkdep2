@@ -40,7 +40,7 @@ functions={}
 # like above, but only containing the programs.
 programs={}
 
-incdirs = []
+incdirs = ["."]
 
 calltree=0
 storetree=1
