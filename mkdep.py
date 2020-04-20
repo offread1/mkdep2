@@ -499,7 +499,8 @@ for (filename,(type, is_include, compflag, mtime, deps, reparse, deleted)) in li
             continue
 
 
-        ########### lets try to find include files before we strip off strings...
+        ## lets try to find include files before we strip off strings...
+        
         tmp_line = long_line
         tmp_line = tmp_line.strip()
         name = libmkdep.match_include(tmp_line, includepath)
@@ -508,11 +509,12 @@ for (filename,(type, is_include, compflag, mtime, deps, reparse, deleted)) in li
                 deps.index(name)
             except ValueError:
                 deps.append(name)
-        ###########
 
-
+        ### now replace strings with A_STRING to make parsing easier
+                
         if type!="C":
             long_line = libmkdep.strip_strings(long_line)
+            
         ## the splitter. split each line at ;
         ## this gives us one statement per line
 

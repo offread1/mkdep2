@@ -14,9 +14,9 @@ object_files={}
 #  (type, is_include, compflag, mtime, deps, reparse, deleted)
 #   type = free, fixed, fixed132 etc
 #   is_include is 0 for source files
-#   compflag is ?
+#   compflag is the compilation group key used in dict object_files above.
 #   mtime = time for last parse of this source file
-#   deps = list of object files that this file depends on
+#   deps = list of object files that this file depends on. (and include files?)
 #   reparse = 1 if this file should be reparsed.
 #   deleted = 1 if this file is missing from the new project file list.
 

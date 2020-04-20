@@ -24,7 +24,9 @@ already reading a readme file in this directory, do a
   python install.py
 
 this will create a file called "rules" that must be included in all
-Makefiles that we want to use this approach.
+Makefiles that we want to use this approach. ("rules" will contain
+absolute paths, and install.py must be re-run if the directory is
+moved.)
 
 
 **The makefile:
@@ -33,13 +35,13 @@ A Makefile to compile and link two sourcefiles could look like these 3
 lines
 
  SOURCEFILES= program.f90 module.f90
- FORTRANCOMPILER=g95
- include ../mkdep/rules
+ FORTRANCOMPILER=ifort
+ include .../mkdep2/rules
 
 make sure the last line really points to the "rules" file, otherwise
 things will not work! Now execute
 
-  .../mkdep reset
+  .../mkdep.py reset
 
 To initialize the mkdep data files included from the makefile. In
 principle, this only has to be done once.
@@ -87,7 +89,7 @@ commands are sufficient to build the executable using the g95 fortran
 compiler:
 
   ls -1 *.f90 > files
-  mkdep --fc g95 files
+  mkdep.py --fc g95 files
   gmake
 
 
@@ -149,7 +151,7 @@ or, if the files are stored in a subdirectory tree, the more advanced
 Now, to generate dependencies for a Makefile, comment out stuff not
 needed in the list of files, and feed the result into mkdep, e.g.:
 
-  mkdep all.files
+  mkdep.py all.files
 
 mkdep will warn if it finds duplicate file names, module definitions
 and a few syntactical quirks it cannot handle.  A template Makefile
@@ -161,7 +163,7 @@ to build the program.
 For a description of the other options to mkdep we refer to the
 command line help
 
-  mkdep -h
+  mkdep.py -h
 
 
 
@@ -174,15 +176,18 @@ depend on e.g modules
 
    file.h : module1.o ...
 
-If the same module is defined in multiple files, the actual source
-file that will be used is the last one listed in the project file.
+For coupled codes, if the same module name is used for different
+modules, defined in multiple files, the actual source file that will
+be used is the last one listed in the project file. Have given up
+supporting all kind of corner cases like this, instead recommend using
+multiple libraries with separate makefiles or makefile targets.
 
 Similarly for multiply defined include files: the last file in the
 project file will be used by default. The search order may be
 overridden through the use of -I flags in the makefile, or by
 providing a list of include directories to search via the -i argument
 to mkdep. the last directories in the list will be the first in the
-search list.
+search list. 
 
 an example of how to "manually" produce a template list of directories
 
@@ -193,7 +198,7 @@ an example of how to "manually" produce a template list of directories
 
 The command
 
-  mkdep --treetop SUPERBEE -t "A test tree" files.txt
+  mkdep.py --treetop SUPERBEE -t "A test tree" files.txt
 
 will generate a call tree from the files in files.txt, but only with
 routines called from SUPERBEE. The tree will be written to a file
@@ -211,3 +216,5 @@ mkdep currently first joins all continuated lines, then split these
 lines at ";"'s, and then empties all strings before searching for use
 or include statements. mkdep will get problems if continuation is used
 across c preprocessing #ifdef regions.
+
+mkdep is also not keen on nested include files.

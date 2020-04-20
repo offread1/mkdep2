@@ -3,6 +3,9 @@ some utilities for mkdep.py
 Helge Avlesen <avle@bccs.uib.no>  para//ab
 """
 
+#from __future__ import print_function   # this is ok.
+#from future_builtins import open        # not found builtins that work on ubuntu yet. skip for now.
+
 import sys, os, re, subprocess
 
 debug=0
@@ -39,7 +42,7 @@ def classify_files(projfile='', incfile='', rootdir=''):
                  ".f90":"free", ".c":"C", ".h":"C", ".H":"C",\
                  ".inc":"fixed", ".INC":"fixed", ".SYM":"fixed"}
 
-    ## argument 1 should be a file with a list of Fortran files
+    ## argument 1 should be a file with a list of Fortran files, the "project file"
     try:
         inputfile = open(projfile,'r')
     except IOError:
@@ -51,6 +54,9 @@ def classify_files(projfile='', incfile='', rootdir=''):
 
     globals.project_mtime = os.stat(projfile).st_mtime
 
+    
+    ## read everything we know from the previous mkdep run in this directory
+    
     load_maps()
 
     longnamesize=20
@@ -66,8 +72,8 @@ def classify_files(projfile='', incfile='', rootdir=''):
             rootdir = rs
 
     ## edit the list of source files by adding default values to
-    ## missing columns for language, file type, optimization.
-    ## leave comments or blank lines.
+    ## missing columns for language, file type, optimization etc.
+    ## preserve comments or blank lines.
 
     if insert_group or full_classify:
         newsrcfile=open(projfile,'w')
@@ -80,6 +86,9 @@ def classify_files(projfile='', incfile='', rootdir=''):
 
     line_number=0
 
+
+    ## look through each line in the project file
+    
     for line in source_files:
         line_number+=1
         current_line = line.strip()
@@ -92,7 +101,7 @@ def classify_files(projfile='', incfile='', rootdir=''):
             if insert_group or full_classify: newsrcfile.write(line)
             continue
 
-        ## if the previous parsing was without parsing, force a full reparse
+        ## if the previous parsing was without calltree parsing, force a full reparse of this file
         reparse=0
         if globals.calltree and globals.prevcalltree==0:
             reparse=1
@@ -105,22 +114,25 @@ def classify_files(projfile='', incfile='', rootdir=''):
             comment=current_line[cpos:]
             current_line=current_line[:cpos]
 
+        # convert line into list of strings
         current_line = current_line.split()
         cols=len(current_line)
 
+        # we now have a filename in col 0, and can prepend the path if we like
         if rootdir=="":
             longname = current_line[0]
         else:
             longname = rootdir.strip() + os.path.sep + current_line[0]
 
+        # collect the file status from operating system
         try:
             statobj = os.stat(longname)
         except OSError:
             print("mkdep error: please check your file list, could not find file:",longname)
             sys.exit()
 
+        # reparse file if its modified
         if longname in globals.clean_source_files2:
-            # source file is modified after last parse
             if statobj.st_mtime > globals.clean_source_files2[longname][3]:
                 reparse = 1
 
@@ -129,12 +141,15 @@ def classify_files(projfile='', incfile='', rootdir=''):
         suffix = shortname[dotpos:]
 
 
-        ## the default group for object files
+        ## the default group for object files, get other group names from column two
+        
         group_name="OPT"
         if cols>1:
             group_name=current_line[1]
         do_opt=group_name
 
+        ## then file type, if not explicitly given in project file, use suffix
+        
         if cols>2:
             type=current_line[2]
             if type not in ['free','fixed','fixed132','C']:
@@ -147,7 +162,7 @@ def classify_files(projfile='', incfile='', rootdir=''):
             else:
                 type="unknown"
 
-        # if the file type has changed, we may need to parse in a different way
+        ## if the file type has changed, we may need to parse in a different way
         if longname in globals.clean_source_files2:
             if type != globals.clean_source_files2[longname][0]:
                 reparse=1
@@ -335,11 +350,6 @@ as a template for the file to use with the -i option.
     return includepath
 
 
-#def system_command(command):
-#    pipe = os.popen(command,'r')
-#    text = pipe.read()
-#    stat = pipe.close()
-#    return stat, text
 
 
 def getsrc(cppcommand, cppflags, filename):
