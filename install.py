@@ -4,10 +4,9 @@ import os
 
 if os.name == "posix":
     mdpath = "MKDEPPATH=" + os.getcwd() 
-    print(mdpath)
 
     f=open('rules','w')
-    f.write((mdpath + "\n" + """
+    f.write(("""
 # These predefined variables may be set in the Makefile
 #
 # EXECUTABLE        name of final program
@@ -39,6 +38,14 @@ endif
 ifeq ($(strip $(ENCODING)),)
    ENCODING=utf-8
 endif
+ifeq ($(strip $(ORGSRCDIR)),)
+   ORGSRCDIR=""
+endif
+ifeq ($(strip $(CPP_FLAGS)),)
+   CPP_FLAGS=""
+endif
+
+
 
 ## the link happen here
 $(EXECUTABLE):$(OBJS)
@@ -48,11 +55,14 @@ $(EXECUTABLE):$(OBJS)
 
 include .mkdep_dependencies
 
+
+""" + mdpath + """
+
 ## delete object files (keep mkdep stuff)
 clean:
 \trm -f build/*.mod *.mod *~ $(EXECUTABLE) $(MAINLIB)
-\t$(MKDEPPATH)/rmobjs .mkdep_objects
-\t$(MKDEPPATH)/mkdep reset
+\t$(MKDEPPATH)/rmobjs.py .mkdep_objects
+\t$(MKDEPPATH)/mkdep.py reset
 \tmake dep
 
 ## (re)generate dependencies
@@ -66,16 +76,15 @@ dep:
 \tdone
 \tif [ "$(strip $(ORGSRCDIR))" != "" ] ; then \\
 \t   echo $(ORGSRCDIR) > .incdirs ;\\
-\t   echo "." >> .incdirs ;\\
-\t   $(MKDEPPATH)/mergedotfiles $(ORGSRCDIR) ;\\
+\t   $(MKDEPPATH)/mergedotfiles.py $(ORGSRCDIR) ;\\
 \telse \\
-\t   echo "." > .incdirs ;\\
-\t   $(MKDEPPATH)/mergedotfiles NOORGSRCDIR ;\\
+\t   echo "" > .incdirs ;\\
+\t   $(MKDEPPATH)/mergedotfiles.py NOORGSRCDIR ;\\
 \tfi
 \tif [ $(strip $(CPP_FLAGS)) != "" ] ; then \\
-\t   $(MKDEPPATH)/mkdep -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
+\t   $(MKDEPPATH)/mkdep.py -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
 \telse \\
-\t   $(MKDEPPATH)/mkdep -e $(ENCODING) -i .incdirs .files ;\\
+\t   $(MKDEPPATH)/mkdep.py -e $(ENCODING) -i .incdirs .files ;\\
 \tfi
 
 ## explicit rules for each and every file
@@ -121,6 +130,13 @@ endif
 ifeq ($(strip $(ENCODING)),)
    ENCODING=utf-8
 endif
+ifeq ($(strip $(ORGSRCDIR)),)
+   ORGSRCDIR=""
+endif
+ifeq ($(strip $(CPP_FLAGS)),)
+   CPP_FLAGS=""
+endif
+
 
 ## the link happen here
 $(EXECUTABLE):$(OBJS)
