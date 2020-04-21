@@ -96,8 +96,8 @@ include .mkdep_rules
 
 
 if os.name == "nt":
-    pwd = os.getcwd()
-
+    pwd = os.getcwd().replace("\\","/")
+    
     f=open('rules','w')
     f.write(("""
 # These predefined variables may be set in the Makefile
@@ -150,7 +150,8 @@ include .mkdep_dependencies
 
 clean:
 \trm -f build/*.mod *.mod *~ $(EXECUTABLE) $(MAINLIB)
-\t""" + repr(pwd)[1:-1] + r"\\rmobjs.py .mkdep_objects" + "\n\t" + repr(pwd)[1:-1] + r"\\mkdep.py reset" + """
+\t""" + pwd + """/rmobjs.py .mkdep_objects \n
+\t""" + pwd + """/mkdep.py reset
 \tmake dep
 
 ## (re)generate dependencies
@@ -165,19 +166,15 @@ dep:
 \tif [ "$(strip $(ORGSRCDIR))" != "" ] ; then \\
 \t   echo $(ORGSRCDIR) > .incdirs ;\\
 \t   echo "." >> .incdirs ;\\
-"""
-"\t   " + repr(pwd)[1:-1] + r"\\mergedotfiles.py $(ORGSRCDIR) ;" + "\\" + """
+\t   """ + pwd + """/mergedotfiles.py $(ORGSRCDIR) ;\\
 \telse \\
 \t   echo "." > .incdirs ;\\
-"""
-"\t   " + repr(pwd)[1:-1] + r"\\mergedotfiles.py NOORGSRCDIR ;" + "\\" + """
+\t   """ + pwd + """/mergedotfiles.py NOORGSRCDIR ;\\
 \tfi
 \tif [ $(strip $(CPP_FLAGS)) != "" ] ; then \\
-"""
-"\t   " + repr(pwd)[1:-1] + r"\\mkdep.py -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;" + "\\" + """
+\t   """ + pwd + """/mkdep.py -e $(ENCODING) -i .incdirs --cpp=cpp --cppflags=$(CPP_FLAGS) .files ;\\
 \telse \\
-"""
-"\t   " + repr(pwd)[1:-1] + r"\\mkdep.py -e $(ENCODING) -i .incdirs .files ;" + "\\" + """
+\t   """ + pwd + """/mkdep.py -e $(ENCODING) -i .incdirs .files ;\\
 \tfi
 
 ## explicit rules for each and every file
